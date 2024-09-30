@@ -29,13 +29,13 @@ paths:
                     A(x[.]) -> A(x[1]) @ 1.0
                 l:
                   type: integer
-                  description: Simulation limit (default: 100)
+                  description: Simulation limit
                   example: 100
                   default: 100
                 p:
                   type: number
                   format: float
-                  description: Plot period (time interval between points in plot) (default: 1.0)
+                  description: Plot period
                   example: 1.0
                   default: 1.0
               required:
@@ -57,3 +57,103 @@ paths:
                   stderr:
                     type: string
                     description: The standard error output of the KaSim simulation
+
+  /run_async:
+    post:
+      operationId: runAsync
+      x-openai-isConsequential: false
+      summary: Run Kappa simulation asynchronously
+      description: This endpoint accepts Kappa code, runs the KaSim tool in the background, and returns a unique key to retrieve the result later.
+      requestBody:
+        description: JSON object containing the Kappa code and optional simulation parameters.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ka:
+                  type: string
+                  description: The Kappa code to simulate.
+                  example: |
+                    %agent: A(x)
+                    A(x[.]) -> A(x[1]) @ 1.0
+                l:
+                  type: integer
+                  description: Simulation limit
+                  example: 100
+                  default: 100
+                p:
+                  type: number
+                  format: float
+                  description: Plot period
+                  example: 1.0
+                  default: 1.0
+              required:
+                - ka
+      responses:
+        "200":
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  key:
+                    type: string
+                    description: Unique key to retrieve the simulation result later
+                  status:
+                    type: string
+                    example: "running"
+
+  /run_async_result/{key}:
+    get:
+      operationId: getRunAsyncResult
+      x-openai-isConsequential: false
+      summary: Get Kappa simulation result for a specific task
+      description: This endpoint retrieves the result of a previously initiated asynchronous Kappa simulation.
+      parameters:
+        - name: key
+          in: path
+          required: true
+          description: The unique key returned by the `/run_async` endpoint.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Simulation result retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  output:
+                    type: string
+                    description: Output of the KaSim simulation
+                  stdout:
+                    type: string
+                    description: The standard output of the KaSim simulation
+                  stderr:
+                    type: string
+                    description: The standard error output of the KaSim simulation
+        "202":
+          description: Simulation is still running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Status of the simulation
+                    example: "still running"
+        "404":
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Task not found"

@@ -8,6 +8,8 @@ import subprocess
 import os
 import hashlib
 
+import asyncio
+
 from pathlib import Path
 
 def read_file_if_exists(file_path):
@@ -78,6 +80,77 @@ async def run():
 
     response = json.dumps({'stdout': text, 'stderr': stderr_text, 'output': output})
     return quart.Response(response=response, mimetype="text/json", status=200)
+
+async def run_shell_command(run_path, cmd, stderr_text, env):
+    process = await asyncio.create_subprocess_exec(
+        *cmd,
+        env=env,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE
+    )
+    
+    stdout, stderr = await process.communicate()
+    text = stdout.decode('utf-8')
+    stderr_text += stderr.decode('utf-8')
+
+    with open(f'{run_path}/run.txt', 'w') as file:
+        file.write(text)
+    with open(f'{run_path}/run_err.txt', 'w') as file:
+        file.write(stderr_text)
+
+@app.post("/run_async")
+async def run_async():
+    stderr_text = ""
+
+    request = await quart.request.get_json(force=True)
+    ka = request["ka"]
+    param_l, l_err = check_param_num(request, "l", "100")
+    param_p, p_err = check_param_num(request, "p", "1.0")
+
+    stderr_text += l_err
+    stderr_text += p_err
+
+    v = f"{ka}\n\nl={param_l}\np={param_p}\n"
+    run_path = hashlib.md5(v.encode("utf-8")).hexdigest()
+    if not os.path.exists(run_path):
+        os.makedirs(run_path)
+
+    with open(f'{run_path}/input.ka', 'w') as file:
+        file.write(ka)
+    delete_file(f'{run_path}/output.csv')
+    
+    env = os.environ.copy()
+
+    kappa_path = '../KappaTools'
+    venv_path = f'{kappa_path}/kappa-env'
+    env['VIRTUAL_ENV'] = venv_path
+    env['PATH'] = f"{venv_path}/bin:{env['PATH']}"
+
+    cmd = [f'{kappa_path}/bin/KaSim', '-i', f'{run_path}/input.ka', '-l', param_l, '-p', param_p, '-o', f'{run_path}/output.csv']
+    asyncio.create_task(run_shell_command(run_path, cmd, stderr_text, env))
+
+    response = json.dumps({'key': run_path})
+    return quart.Response(response=response, mimetype="text/json", status=200)
+
+@app.get("/run_async_result/{key}")
+async def run_async_result(key):
+    stderr_text = ""
+    try:
+        int(key, 16)
+    except ValueError:
+        stderr_text += "Invalid key!\n"
+    if stderr_text == "":
+        run_path = key
+        text = read_file_if_exists(f'{run_path}/run.txt')
+        stderr_text += read_file_if_exists(f'{run_path}/run_err.txt')
+        output = read_file_if_exists(f'{run_path}/output.csv')
+    else:
+        text = ""
+        output = ""
+        
+    response = json.dumps({'stdout': text, 'stderr': stderr_text, 'output': output})
+    return quart.Response(response=response, mimetype="text/json", status=200)
+
 
 @app.get("/openapi.yaml")
 async def openapi_spec():
