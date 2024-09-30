@@ -1,8 +1,8 @@
 server {
-    server_name kappa-chatgpt.livecode.ch;
+    server_name kappa-async.livecode.ch;
     listen 80;
     location / {
         include proxy_params;
-        proxy_pass http://unix:/home/namin/KappaTools/io-gpt.sock;
+        proxy_pass http://unix:/home/namin/kappa-chatgpt/io-gpt.sock;
     }
 }

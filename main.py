@@ -6,6 +6,7 @@ from quart import request
 
 import subprocess
 import os
+import hashlib
 
 from pathlib import Path
 
@@ -49,27 +50,31 @@ async def run():
     stderr_text += l_err
     stderr_text += p_err
 
-    project_path = "/home/namin/KappaTools"
+    v = f"{ka}\n\nl={param_l}\np={param_p}\n"
+    run_path = hashlib.md5(v.encode("utf-8")).hexdigest()
+    if not os.path.exists(run_path):
+        os.makedirs(run_path)
 
-    with open(f'{project_path}/input.ka', 'w') as file:
+    with open(f'{run_path}/input.ka', 'w') as file:
         file.write(ka)
-    delete_file(f'{project_path}/output.csv')
+    delete_file(f'{run_path}/output.csv')
     
     env = os.environ.copy()
 
-    venv_path = f'{project_path}/kappa-env'
+    kappa_path = '../KappaTools'
+    venv_path = f'{kappa_path}/kappa-env'
     env['VIRTUAL_ENV'] = venv_path
     env['PATH'] = f"{venv_path}/bin:{env['PATH']}"
 
-    result = subprocess.run([f'{project_path}/bin/KaSim', '-i', 'input.ka', '-l', param_l, '-p', param_p, '-o', f'{project_path}/output.csv'], env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    result = subprocess.run([f'{kappa_path}/bin/KaSim', '-i', f'{run_path}/input.ka', '-l', param_l, '-p', param_p, '-o', f'{run_path}/output.csv'], env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     text = result.stdout.decode('utf-8')
     stderr_text += result.stderr.decode('utf-8')
 
-    with open(f'{project_path}/run.txt', 'w') as file:
+    with open(f'{run_path}/run.txt', 'w') as file:
         file.write(text)
-    with open(f'{project_path}/run_err.txt', 'w') as file:
+    with open(f'{run_path}/run_err.txt', 'w') as file:
         file.write(stderr_text)
-    output = read_file_if_exists('output.csv')
+    output = read_file_if_exists(f'{run_path}/output.csv')
 
     response = json.dumps({'stdout': text, 'stderr': stderr_text, 'output': output})
     return quart.Response(response=response, mimetype="text/json", status=200)

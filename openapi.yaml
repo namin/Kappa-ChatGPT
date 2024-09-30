@@ -4,8 +4,8 @@ info:
   description: API for running Kappa simulations using KaSim.
   version: 1.0.0
 servers:
-  - url: https://kappa-chatgpt.livecode.ch
-    description: Kappa GPT Action
+  - url: https://kappa-async.livecode.ch
+    description: Kappa GPT Actions
 paths:
   /run:
     post:
