@@ -106,19 +106,24 @@ paths:
                     type: string
                     example: "running"
 
-  /run_async_result/{key}:
-    get:
+  /run_async_result:
+    post:
       operationId: getRunAsyncResult
       x-openai-isConsequential: false
       summary: Get Kappa simulation result for a specific task
-      description: This endpoint retrieves the result of a previously initiated asynchronous Kappa simulation.
-      parameters:
-        - name: key
-          in: path
-          required: true
-          description: The unique key returned by the `/run_async` endpoint.
-          schema:
-            type: string
+      description: This endpoint retrieves the result of a previously initiated asynchronous Kappa simulation by providing a key in the request body.
+      requestBody:
+        description: JSON object containing the unique key to retrieve the result.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                key:
+                  type: string
+                  description: Unique key returned by the `/run_async` endpoint.
+                  example: "123e4567-e89b-12d3-a456-426614174000"
       responses:
         "200":
           description: Simulation result retrieved successfully

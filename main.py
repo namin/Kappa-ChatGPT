@@ -132,8 +132,11 @@ async def run_async():
     response = json.dumps({'key': run_path})
     return quart.Response(response=response, mimetype="text/json", status=200)
 
-@app.get("/run_async_result/{key}")
-async def run_async_result(key):
+@app.post("/run_async_result")
+async def run_async_result():
+    request = await quart.request.get_json(force=True)
+    key = request["key"]
+
     stderr_text = ""
     try:
         int(key, 16)
