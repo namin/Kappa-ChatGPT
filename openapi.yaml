@@ -1,0 +1,59 @@
+openapi: 3.1.0
+info:
+  title: Kappa Simulation API
+  description: API for running Kappa simulations using KaSim.
+  version: 1.0.0
+servers:
+  - url: https://kappa-chatgpt.livecode.ch
+    description: Kappa GPT Action
+paths:
+  /run:
+    post:
+      operationId: run
+      x-openai-isConsequential: false
+      summary: Run Kappa simulation
+      description: This endpoint accepts Kappa code, writes it to a file, executes the KaSim tool, and returns the simulation result.
+      requestBody:
+        description: JSON object containing the Kappa code and optional simulation parameters.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ka:
+                  type: string
+                  description: The Kappa code to simulate.
+                  example: |
+                    %agent: A(x)
+                    A(x[.]) -> A(x[1]) @ 1.0
+                l:
+                  type: integer
+                  description: Simulation limit (default: 100)
+                  example: 100
+                  default: 100
+                p:
+                  type: number
+                  format: float
+                  description: Plot period (time interval between points in plot) (default: 1.0)
+                  example: 1.0
+                  default: 1.0
+              required:
+                - ka
+      responses:
+        "200":
+          description: Successful simulation execution
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  output:
+                    type: string
+                    description: Output of the KaSim simulation
+                  stdout:
+                    type: string
+                    description: The standard output of the KaSim simulation
+                  stderr:
+                    type: string
+                    description: The standard error output of the KaSim simulation
