@@ -11,7 +11,10 @@ It uses the [KappaTools](https://github.com/Kappa-Dev/KappaTools) project, which
 - `opam init --compile=4.14.1`
 - `git clone https://github.com/Kappa-Dev/KappaTools.git`
 - `opam install --deps-only .`
-- `pip install .` (from the python env deployed below)
+- `dune build`
+- `python3 -m venv kappa-env`
+- `source kappa-env/bin/activate`
+- `pip install .`
 
 ## Deployment of ChatGPT action
 
