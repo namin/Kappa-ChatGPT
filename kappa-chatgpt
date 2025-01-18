@@ -3,6 +3,6 @@ server {
     listen 80;
     location / {
         include proxy_params;
-        proxy_pass http://unix:/home/namin/kappa-chatgpt/io-gpt.sock;
+        proxy_pass http://unix:/var/www/Kappa-ChatGPT/io-gpt.sock;
     }
 }
