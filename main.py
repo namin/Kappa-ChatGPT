@@ -53,7 +53,7 @@ async def run():
     stderr_text += p_err
 
     v = f"{ka}\n\nl={param_l}\np={param_p}\n"
-    run_path = hashlib.md5(v.encode("utf-8")).hexdigest()
+    run_path = "runs/"+hashlib.md5(v.encode("utf-8")).hexdigest()
     if not os.path.exists(run_path):
         os.makedirs(run_path)
 
@@ -111,7 +111,7 @@ async def run_async():
     stderr_text += p_err
 
     v = f"{ka}\n\nl={param_l}\np={param_p}\n"
-    run_path = hashlib.md5(v.encode("utf-8")).hexdigest()
+    run_path = "runs/"+hashlib.md5(v.encode("utf-8")).hexdigest()
     if not os.path.exists(run_path):
         os.makedirs(run_path)
 
@@ -143,7 +143,7 @@ async def run_async_result():
     except ValueError:
         stderr_text += "Invalid key!\n"
     if stderr_text == "":
-        run_path = key
+        run_path = "runs/"+key
         text = read_file_if_exists(f'{run_path}/run.txt')
         stderr_text += read_file_if_exists(f'{run_path}/run_err.txt')
         output = read_file_if_exists(f'{run_path}/output.csv')
