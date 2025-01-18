@@ -18,4 +18,4 @@ It uses the [KappaTools](https://github.com/Kappa-Dev/KappaTools) project, which
 
 ## Deployment of ChatGPT action
 
-The deployment steps follow this [HOWTO](https://github.com/namin/io-chatgpt.livecode.ch/tree/main/deploy).
+The deployment steps follow this [HOWTO](https://github.com/namin/io-chatgpt.livecode.ch/tree/main/deploy), using the configurations here (in kappa-chatgpt.service, replace `namin` with your username).
