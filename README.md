@@ -18,4 +18,9 @@ It uses the [KappaTools](https://github.com/Kappa-Dev/KappaTools) project, which
 
 ## Deployment of ChatGPT action
 
-The deployment steps follow this [HOWTO](https://github.com/namin/io-chatgpt.livecode.ch/tree/main/deploy), using the configurations here (in `kappa-chatgpt.service`, replace `namin` with your username).
+The deployment steps follow this [HOWTO](https://github.com/namin/io-chatgpt.livecode.ch/tree/main/deploy), using the configurations here (in `kappa-chatgpt.service`, replace `namin` with your username). The environment variables are as follows for me:
+- `export YOUR_SERVICE=kappa-chatgpt`
+- `export YOUR_SERVICE_CONFIG=$YOUR_SERVICE.service`
+- `export YOUR_NGINX_CONFIG=$YOUR_SERVICE`
+- `export YOUR_DOMAIN=kappa-async.livecode.ch`
+
