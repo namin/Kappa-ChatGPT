@@ -1,13 +1,13 @@
 [Unit]
-Description=hypercorn instance to serve kappa-chatgpt
+Description=hypercorn instance to serve Kappa-ChatGPT
 After=network.target
 
 [Service]
 User=namin
 Group=www-data
-WorkingDirectory=/home/namin/kappa-chatgpt
-Environment="PATH=/home/namin/kappa-chatgpt/io-gpt-env/bin"
-ExecStart=/home/namin/kappa-chatgpt/io-gpt-env/bin/hypercorn -b unix:io-gpt.sock -w 3 -g 33 -m 775 main:app
+WorkingDirectory=/var/www/Kappa-ChatGPT
+Environment="PATH=/var/www/Kappa-ChatGPT/io-gpt-env/bin"
+ExecStart=/var/www/Kappa-ChatGPT/io-gpt-env/bin/hypercorn -b unix:io-gpt.sock -w 3 -g 33 -m 775 main:app
 
 [Install]
 WantedBy=multi-user.target
